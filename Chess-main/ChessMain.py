@@ -267,7 +267,9 @@ def drawEndGameText(screen, text):
     textObject = font.render(text, 0, p.Color('Blue'))
     screen.blit(textObject, textLocation.move(4, 4))
 
-def main():
+def start_game(playerOne,playerTwo):
+    # playerOne = bool(input("player 1:press anything or enter to skip ")) # if Human is playing white -> this will be true
+    # playerTwo = bool(input("player 2:press anything or enter to skip "))  # if Human is playing black -> this will be true
     screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANNEL_WIDTH, BOARD_HEIGHT))
     clock = p.time.Clock()
     screen.fill(p.Color('white'))
@@ -279,8 +281,7 @@ def main():
     animate = False  # Flag variable to note when we should animate the piece movement
     sqSelected = ()  # no sq is selected initially, keep track of the last click by the user -> (tuple : (row,col))
     playerClicks = []  # contains players clicks => [(6,4),(4,4)]  -> pawn at (6,4) moved 2 steps up on (4,4)
-    playerOne = True  # if Human is playing white -> this will be true
-    playerTwo = True  # if Human is playing black -> this will be true
+
     gameOver = False  # True in case of Checkmate and Stalemate
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
@@ -368,5 +369,7 @@ def main():
         p.display.flip()
 
 
+def main():
+    start_game(playerOne=True,playerTwo=False)
 if __name__ == '__main__':
     main()
