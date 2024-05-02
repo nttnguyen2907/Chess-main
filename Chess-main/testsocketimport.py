@@ -37,13 +37,13 @@ def handle_client(conn, addr):
 # Kiểm tra nếu có đủ hai client và cả hai đều đã sẵn sàng
     status = 'getting started...'
     conn.send(status.encode(FORMAT))
-    if len(clients) == 2 and all(role == "True" for role in roles):
-        start_game()
+    if len(clients) == 2 and len(colors) == 2:
+        start_game(color)
 
 
 
 # Hàm khởi động trò chơi
-def start_game():
+def start_game(color):
     print("Starting game...")
 
     # Gửi thông báo bắt đầu trò chơi cho cả hai client
@@ -51,7 +51,7 @@ def start_game():
         conn.send("Game is starting. You are playing chess with the other player.".encode(FORMAT))
 
     # Khởi tạo trò chơi cờ vua
-    ChessMain.start_game()
+    ChessMain.start_pergame(color)
 
 
 # Lắng nghe và chấp nhận kết nối từ client

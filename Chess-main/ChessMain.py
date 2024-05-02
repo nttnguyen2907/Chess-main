@@ -369,6 +369,115 @@ def start_game(playerOne,playerTwo):
         p.display.flip()
 
 
+
+def start_pergame(playerMain):
+    if playerMain == 'b':
+        playerOne = False
+        playerTwo = True
+    else:
+        playerOne = True
+        playerTwo = False
+    # playerOne = bool(input("player 1:press anything or enter to skip ")) # if Human is playing white -> this will be true
+    # playerTwo = bool(input("player 2:press anything or enter to skip "))  # if Human is playing black -> this will be true
+    screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANNEL_WIDTH, BOARD_HEIGHT))
+    clock = p.time.Clock()
+    screen.fill(p.Color('white'))
+    gs = ChessEngine.GameState()
+    validMoves = gs.getValidMoves()  # get a list of valid moves.
+    moveMade = False  # to check if the user made a move. If true recalculate validMoves.
+    loadImages()  # only do this once -> before the while loop
+    running = True
+    animate = False  # Flag variable to note when we should animate the piece movement
+    sqSelected = ()  # no sq is selected initially, keep track of the last click by the user -> (tuple : (row,col))
+    playerClicks = []  # contains players clicks => [(6,4),(4,4)]  -> pawn at (6,4) moved 2 steps up on (4,4)
+
+    gameOver = False  # True in case of Checkmate and Stalemate
+    while running:
+        humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
+        for e in p.event.get():
+            if e.type == p.QUIT:
+                running = False
+            # MOUSE HANDLERS
+            elif e.type == p.MOUSEBUTTONDOWN:
+                if not gameOver and humanTurn:
+                    location = p.mouse.get_pos()  # (x,y) position of mouse
+                    col = location[0] // SQ_SIZE
+                    row = location[1] // SQ_SIZE
+                    if not playerOne:
+                        row, col = blackPerspectiveRow(row, col)
+                    if (col >= 8) or col < 0:  # Click out of board (on move log panel) -> do nothing
+                        continue
+                    if sqSelected == (row, col):  # user selected the same sq. twice -> deselect the selecion
+                        sqSelected = ()
+                        playerClicks = []
+                    else:
+                        sqSelected = (row, col)
+                        playerClicks.append(sqSelected)  # append for both 1st and 2nd click
+                        if len(playerClicks) == 2:  # when 2nd click
+                            move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
+                            for i in range(len(validMoves)):
+                                if move == validMoves[i]:
+                                    gs.makeMove(validMoves[i])
+                                    moveMade = True
+                                    animate = True
+                                    playerClicks = []  # reset playerClicks
+                                    sqSelected = ()  # reset user clicks
+                            if not moveMade:
+                                playerClicks = [sqSelected]
+
+
+
+            # KEY HANDLERS
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z:  # undo last move id 'z' is pressed
+                    gs.undoMove()
+                    gameOver = False
+                    moveMade = True  # can do `validMoves = gs.validMoves()` but then if we change function name we will have to change the call at various places.
+                if e.key == p.K_r:  # reset the game if 'r' is pressed
+                    gs = ChessEngine.GameState()
+                    sqSelected = ()
+                    playerClicks = []
+                    moveMade = False
+                    animate = False
+                    gameOver = False
+                    validMoves = gs.getValidMoves()
+
+        # AI Move finder logic
+        if not gameOver and not humanTurn:
+            AIMove = ChessBot.findBestMoveMinMax(gs, validMoves)
+            if AIMove is None:  # If AI can't find any move -> if any move will lead to opponent giving a checkmate.
+                AIMove = ChessBot.findRandomMove(validMoves)
+            gs.makeMove(AIMove)
+            moveMade = True
+            animate = True
+
+        if moveMade:
+            if len(gs.moveLog) > 0 and animate:
+                animate = False
+                animateMove(gs.moveLog[-1], screen, gs.board, clock, playerOne)
+            validMoves = gs.getValidMoves()
+
+            moveMade = False
+
+        drawGameState(screen, gs, sqSelected, validMoves, playerOne)
+
+        # Print Checkmate
+        if gs.checkMate:
+            gameOver = True
+            if gs.whiteToMove:
+                drawEndGameText(screen, "Black Won by Checkmate!");
+            else:
+                drawEndGameText(screen, "White Won by Checkmate!");
+
+        # Print Stalmate
+        if gs.staleMate:
+            gameOver = True
+            drawEndGameText(screen, "Draw due to Stalemate!")
+
+        clock.tick(MAX_FPS)
+        p.display.flip()
+
+
 def main():
     start_game(playerOne=True,playerTwo=False)
 if __name__ == '__main__':

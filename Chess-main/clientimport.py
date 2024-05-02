@@ -35,17 +35,8 @@ if role == True:
 
 
 
-    # Nếu thông báo là bắt đầu trò chơi và vai trò là True, thì mở trò chơi
-    # if "starting" in message and role.lower() == "true":
-        screen = p.display.set_mode((WIDTH, HEIGHT))
-        p.display.set_caption("Chess Game")
-        running = True
-        while running:
-            for event in p.event.get():
-                if event.type == p.QUIT:
-                    running = False
-            # Code để hiển thị trò chơi ở đây
-            p.display.flip()
+
+        ChessMain.start_pergame(color)
 else:
     #đoạn code sau khi nhập role = false sẽ qua bot
     player2 = bool(input('enter for ưhite ,"b" for black: '))

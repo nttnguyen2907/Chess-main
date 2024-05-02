@@ -40,15 +40,31 @@ if __name__ == '__main__':
         client_name = input('nhap ten ng choi: ')
         client.sendall(client_name.encode(FORMAT))
         msg = None
-        while (msg != "x"):
-            msg = input("talk: ")
-            client.sendall(msg.encode(FORMAT))
 
-            # functions called by client
-            if (msg == 'login'):
-                # wait response
-                client.recv(1024)
-                client_login(client)
+        while (msg != "x"):
+
+                msg = input(f"{client_name}: ")
+                client.sendall(msg.encode(FORMAT))
+
+                try:
+                    # Nhận clientname
+                    client_names = client.recv(1024).decode(FORMAT)
+                    # if not client_names:
+                    #     break
+
+
+                    # Nhận msg
+                    msg = client.recv(1024).decode(FORMAT)
+                    # if not msg:
+                    #     break
+                    print(client_names,msg)
+                except:
+                    pass
+                # functions called by client
+                if (msg == 'login'):
+                    # wait response
+                    client.recv(1024)
+                    client_login(client)
 
 
 

@@ -1,16 +1,22 @@
 import socket
 import threading
+from _multiprocessing import send
+
 import pyodbc
 
 HOST = '127.0.0.1'
 PORT = 64532
 FORMAT ='utf8'
-def handleClient(conn: socket, addr):
+def handleClient(conn: socket, addr ,clients):
     print("conn: ", conn.getsockname())
     msg = None
     while (msg != "x"):
         msg = conn.recv(1024).decode(FORMAT)
         print(client_name,addr, ": ", msg)
+        for key in clients.keys():
+            if addr != key:
+                conn.sendall(client_name.encode(FORMAT))
+                conn.sendall(msg.encode(FORMAT))
 
         if (msg == 'login'):
             # response
@@ -85,7 +91,7 @@ if __name__ == '__main__':
 
             # Thêm client vào từ điển
             clients[addr] = client_name
-            thr = threading.Thread(target=handleClient, args=(conn, addr))
+            thr = threading.Thread(target=handleClient, args=(conn, addr,clients))
             thr.daemon = False
             thr.start()
 
