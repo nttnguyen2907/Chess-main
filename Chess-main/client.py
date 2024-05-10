@@ -46,20 +46,21 @@ if __name__ == '__main__':
                 msg = input(f"{client_name}: ")
                 client.sendall(msg.encode(FORMAT))
 
-                try:
-                    # Nhận clientname
+                count = client.recv(1024).decode(FORMAT)
+
+                if int(count) >1:
+                # Nhận clientname
                     client_names = client.recv(1024).decode(FORMAT)
-                    # if not client_names:
-                    #     break
+                # if not client_names:
+                #     break
 
 
-                    # Nhận msg
-                    msg = client.recv(1024).decode(FORMAT)
-                    # if not msg:
-                    #     break
-                    print(client_names,msg)
-                except:
-                    pass
+                # Nhận msg
+                    msgs = client.recv(1024).decode(FORMAT)
+                # if not msg:
+                #     break
+                    print(client_names,':',msgs)
+
                 # functions called by client
                 if (msg == 'login'):
                     # wait response

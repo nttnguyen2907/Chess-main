@@ -13,7 +13,10 @@ def handleClient(conn: socket, addr ,clients):
     while (msg != "x"):
         msg = conn.recv(1024).decode(FORMAT)
         print(client_name,addr, ": ", msg)
+        nClients = str(nClient)
+        conn.sendall(nClients.encode(FORMAT))
         for key in clients.keys():
+
             if addr != key:
                 conn.sendall(client_name.encode(FORMAT))
                 conn.sendall(msg.encode(FORMAT))

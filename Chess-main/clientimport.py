@@ -46,5 +46,7 @@ else:
         player1 = True
     ChessMain.start_game(player1,player2)
 
+
+
 # Đóng kết nối
 client_socket.close()

@@ -192,7 +192,7 @@ def drawMoveLog(screen, gs):
     verticalPadding = 5
     lineSpacing = 5
     for i in range(len(moveLog)):
-        textObject = font.render(moveLog[i], True, p.Color('white'))
+        textObject = font.render(moveLog[i], True, p.Color('orange'))
         if (verticalPadding + textObject.get_height() >= (MOVE_LOG_PANNEL_HEIGHT - 1)):
             # if i > 1
             verticalPadding = 5
@@ -304,6 +304,8 @@ def start_game(playerOne,playerTwo):
                     else:
                         sqSelected = (row, col)
                         playerClicks.append(sqSelected)  # append for both 1st and 2nd click
+                        print(playerClicks)
+
                         if len(playerClicks) == 2:  # when 2nd click
                             move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
                             for i in range(len(validMoves)):
@@ -444,12 +446,15 @@ def start_pergame(playerMain):
 
         # AI Move finder logic
         if not gameOver and not humanTurn:
-            AIMove = ChessBot.findBestMoveMinMax(gs, validMoves)
-            if AIMove is None:  # If AI can't find any move -> if any move will lead to opponent giving a checkmate.
-                AIMove = ChessBot.findRandomMove(validMoves)
-            gs.makeMove(AIMove)
-            moveMade = True
-            animate = True
+            Opponent = [(6,2),(5,2)]
+
+            move = ChessEngine.Move(Opponent[0], Opponent[1], gs.board)
+            for i in range(len(validMoves)):
+                if move == validMoves[i]:
+                    gs.makeMove(validMoves[i])
+                    moveMade = True
+                    animate = True
+
 
         if moveMade:
             if len(gs.moveLog) > 0 and animate:
